@@ -68,7 +68,7 @@
 	data["can_go_home"] = can_go_home
 	return data
 
-/obj/machinery/mineral/labor_claim_console/ui_act(action, params)
+/obj/machinery/mineral/labor_claim_console/ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
 	. = ..()
 	if(.)
 		return
@@ -150,10 +150,10 @@
 		points += SHEET_POINT_VALUE * input.amount
 	return ..()
 
-/obj/machinery/mineral/stacking_machine/laborstacker/attackby(obj/item/weapon, mob/user, params)
+/obj/machinery/mineral/stacking_machine/laborstacker/base_item_interaction(mob/living/user, obj/item/weapon, list/modifiers)
 	if(istype(weapon, /obj/item/stack/sheet))
 		process_sheet(weapon)
-		return
+		return ITEM_INTERACT_SUCCESS
 	return ..()
 
 /**********************Point Lookup Console**************************/

@@ -1,8 +1,5 @@
 import { deepMerge } from 'common/collections';
-import { Color } from 'common/color';
-import { BooleanLike } from 'common/react';
-
-import { useBackend } from '../backend';
+import { Color } from 'tgui-core/color';
 import {
   Box,
   Button,
@@ -10,7 +7,11 @@ import {
   NoticeBox,
   Stack,
   StyleableSection,
-} from '../components';
+} from 'tgui-core/components';
+import { BooleanLike } from 'tgui-core/react';
+
+import { useBackend } from '../backend';
+import { DEPARTMENTS_RU, JOBS_RU } from '../bandastation/ru_jobs'; // BANDASTATION EDIT
 import { Window } from '../layouts';
 import { JOB2ICON } from './common/JobToIcon';
 
@@ -84,7 +85,13 @@ export const JobEntry = (data: {
     >
       <>
         {jobIcon && <Icon name={jobIcon} />}
-        {job.command ? <b>{jobName}</b> : jobName}
+        {job.command ? (
+          <b>{JOBS_RU[jobName] ? JOBS_RU[jobName] : jobName}</b>
+        ) : JOBS_RU[jobName] ? (
+          JOBS_RU[jobName]
+        ) : (
+          jobName
+        )}
         <span
           style={{
             whiteSpace: 'nowrap',
@@ -143,7 +150,9 @@ export const JobSelection = (props) => {
                   <StyleableSection
                     title={
                       <>
-                        {departmentName}
+                        {DEPARTMENTS_RU[departmentName]
+                          ? DEPARTMENTS_RU[departmentName]
+                          : departmentName}
                         <span
                           style={{
                             fontSize: '1rem',

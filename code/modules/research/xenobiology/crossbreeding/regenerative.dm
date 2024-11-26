@@ -8,6 +8,7 @@ Regenerative extracts:
 	desc = "It's filled with a milky substance, and pulses like a heartbeat."
 	effect = "regenerative"
 	icon_state = "regenerative"
+	effect_desc = "Completely heals your injuries, with no extra effects."
 
 /obj/item/slimecross/regenerative/proc/core_effect(mob/living/carbon/human/target, mob/user)
 	return
@@ -74,7 +75,11 @@ Regenerative extracts:
 	var/obj/structure/closet/C = new /obj/structure/closet(target.loc)
 	C.name = "slimy closet"
 	C.desc = "Looking closer, it seems to be made of a sort of solid, opaque, metal-like goo."
-	target.forceMove(C)
+	if(target.mob_size > C.max_mob_size) //Prevents capturing megafauna or other large mobs in the closets
+		C.bust_open()
+		C.visible_message(span_warning("[target] is too big, and immediately breaks \the [C.name] open!"))
+	else //This can't be allowed to actually happen to the too-big mobs or it breaks some actions
+		target.forceMove(C)
 
 /obj/item/slimecross/regenerative/yellow
 	colour = SLIME_TYPE_YELLOW
@@ -82,11 +87,11 @@ Regenerative extracts:
 
 /obj/item/slimecross/regenerative/yellow/core_effect(mob/living/target, mob/user)
 	var/list/batteries = list()
-	for(var/obj/item/stock_parts/cell/C in target.get_all_contents())
+	for(var/obj/item/stock_parts/power_store/C in target.get_all_contents())
 		if(C.charge < C.maxcharge)
 			batteries += C
 	if(batteries.len)
-		var/obj/item/stock_parts/cell/ToCharge = pick(batteries)
+		var/obj/item/stock_parts/power_store/ToCharge = pick(batteries)
 		ToCharge.charge = ToCharge.maxcharge
 		to_chat(target, span_notice("You feel a strange electrical pulse, and one of your electrical items was recharged."))
 
@@ -150,6 +155,8 @@ Regenerative extracts:
 		old_location.visible_message(span_warning("[target] disappears in a shower of sparks!"))
 		to_chat(target, span_danger("The milky goo teleports you somewhere it remembers!"))
 
+	if(HAS_TRAIT(target, TRAIT_NO_TELEPORT))
+		old_location.visible_message(span_warning("[target] sparks briefly, but is prevented from teleporting!"))
 
 /obj/item/slimecross/regenerative/bluespace/Initialize(mapload)
 	. = ..()
@@ -227,7 +234,7 @@ Regenerative extracts:
 	effect_desc = "Fully heals the target and flashes everyone in sight."
 
 /obj/item/slimecross/regenerative/oil/core_effect(mob/living/target, mob/user)
-	playsound(src, 'sound/weapons/flash.ogg', 100, TRUE)
+	playsound(src, 'sound/items/weapons/flash.ogg', 100, TRUE)
 	for(var/mob/living/L in view(user,7))
 		L.flash_act()
 
