@@ -1,6 +1,6 @@
-import { classes } from 'common/react';
+import { Box, Dropdown, Stack } from 'tgui-core/components';
+import { classes } from 'tgui-core/react';
 
-import { Box, Dropdown, Stack } from '../../../../../components';
 import {
   FeatureChoiced,
   FeatureChoicedServerData,
@@ -61,7 +61,7 @@ const UIStyleInput = (
 };
 
 export const UI_style: FeatureChoiced = {
-  name: 'UI Style',
-  category: 'UI',
+  name: 'Стиль UI',
+  category: 'ИНТЕРФЕЙС',
   component: UIStyleInput,
 };

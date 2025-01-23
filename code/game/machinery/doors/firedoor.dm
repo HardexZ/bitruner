@@ -493,9 +493,28 @@
 	user.changeNext_move(CLICK_CD_MELEE)
 
 	if(!user.combat_mode)
+		/* BandaStation Removal
 		user.visible_message(span_notice("[user] knocks on [src]."), \
 			span_notice("You knock on [src]."))
 		playsound(src, knock_sound, 50, TRUE)
+		*/
+		// BANDASTATION EDIT START
+		if(welded)
+			return
+
+		if(!do_after(user, 5 SECONDS))
+			return
+
+		if(!density)
+			return
+
+		open()
+		user.visible_message(span_notice("[user] opens [src]."), span_notice("You open [src]."))
+		if(!active)
+			return
+
+		addtimer(CALLBACK(src, PROC_REF(correct_state)), 2 SECONDS, TIMER_UNIQUE)
+		// BANDASTATION EDIT STOP
 	else
 		user.visible_message(span_warning("[user] bashes [src]!"), \
 			span_warning("You bash [src]!"))
@@ -548,7 +567,7 @@
 	if(welded || operating)
 		return
 
-	var/atom/crowbar_owner = acting_object.loc //catchs mechs and any other non-mob using a crowbar
+	var/atom/crowbar_owner = acting_object?.loc || user // catches mechs and any other non-mob using a crowbar
 
 	if(density)
 		being_held_open = TRUE
@@ -577,19 +596,23 @@
 	else
 		close()
 
-/obj/machinery/door/firedoor/proc/handle_held_open_adjacency(mob/user)
+/obj/machinery/door/firedoor/proc/handle_held_open_adjacency(atom/crowbar_owner)
 	SIGNAL_HANDLER
 
-	var/mob/living/living_user = user
-	if(!QDELETED(user) && Adjacent(user) && isliving(user) && (living_user.body_position == STANDING_UP))
-		return
+
+	if(!QDELETED(crowbar_owner) && crowbar_owner.CanReach(src))
+		if(!ismob(crowbar_owner))
+			return
+		var/mob/living/mob_user = crowbar_owner
+		if(isliving(mob_user) && (mob_user.body_position == STANDING_UP))
+			return
 	being_held_open = FALSE
 	correct_state()
-	UnregisterSignal(user, COMSIG_MOVABLE_MOVED)
-	UnregisterSignal(user, COMSIG_LIVING_SET_BODY_POSITION)
-	UnregisterSignal(user, COMSIG_QDELETING)
-	if(user)
-		user.balloon_alert_to_viewers("released firelock", "released firelock")
+	UnregisterSignal(crowbar_owner, COMSIG_MOVABLE_MOVED)
+	UnregisterSignal(crowbar_owner, COMSIG_LIVING_SET_BODY_POSITION)
+	UnregisterSignal(crowbar_owner, COMSIG_QDELETING)
+	if(crowbar_owner)
+		crowbar_owner.balloon_alert_to_viewers("released firelock", "released firelock")
 
 /obj/machinery/door/firedoor/attack_ai(mob/user)
 	add_fingerprint(user)

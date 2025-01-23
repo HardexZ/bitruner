@@ -1,4 +1,5 @@
-import { Dropdown, NumberInput, Stack } from '../../../../../components';
+import { Dropdown, NumberInput, Stack } from 'tgui-core/components';
+
 import { Feature, FeatureNumericData, FeatureValueProps } from '../base';
 
 type FpsServerData = FeatureNumericData & {
@@ -49,6 +50,6 @@ const FpsInput = (props: FeatureValueProps<number, number, FpsServerData>) => {
 
 export const clientfps: Feature<number, number, FpsServerData> = {
   name: 'FPS',
-  category: 'GAMEPLAY',
+  category: 'ГЕЙМПЛЕЙ',
   component: FpsInput,
 };
