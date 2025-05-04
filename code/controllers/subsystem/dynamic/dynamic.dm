@@ -143,7 +143,7 @@ SUBSYSTEM_DEF(dynamic)
 	var/waittime_h = 1800
 
 	/// A number between 0 and 100. The maximum amount of threat allowed to generate.
-	var/max_threat_level = 100
+	var/max_threat_level = 0 // BANDASTATION EDIT - STORYTELLER
 
 	/// The extra chance multiplier that a heavy impact midround ruleset will run next time.
 	/// For example, if this is set to 50, then the next heavy roll will be about 50% more likely to happen.
@@ -247,9 +247,9 @@ SUBSYSTEM_DEF(dynamic)
 		if(!threatadd)
 			return
 		if(threatadd > 0)
-			create_threat(threatadd, threat_log, "[worldtime2text()]: increased by [key_name(usr)]")
+			create_threat(threatadd, threat_log, "[gameTimestamp()]: increased by [key_name(usr)]")
 		else
-			spend_midround_budget(-threatadd, threat_log, "[worldtime2text()]: decreased by [key_name(usr)]")
+			spend_midround_budget(-threatadd, threat_log, "[gameTimestamp()]: decreased by [key_name(usr)]")
 	else if (href_list["injectlate"])
 		latejoin_injection_cooldown = 0
 		late_forced_injection = TRUE
@@ -317,7 +317,7 @@ SUBSYSTEM_DEF(dynamic)
 		addtimer(CALLBACK(src, PROC_REF(send_intercept)), 10 SECONDS)
 		return
 
-	. = "<b><i>Информационное сообщение Департамента разведки Нанотрейзен, Сектор Спинвард, Дата [time2text(world.realtime, "DDD, MMM DD")], [CURRENT_STATION_YEAR]:</i></b><hr>"
+	. = "<b><i>Информационное сообщение Департамента разведки Нанотрейзен, Сектор Спинвард, Дата [time2text(world.realtime, "DDD, MMM DD", NO_TIMEZONE)], [CURRENT_STATION_YEAR]:</i></b><hr>"
 	. += generate_advisory_level()
 
 	var/min_threat = 100
@@ -326,7 +326,8 @@ SUBSYSTEM_DEF(dynamic)
 			continue
 		min_threat = min(ruleset.cost, min_threat)
 
-	var/greenshift = GLOB.dynamic_forced_extended || (threat_level < min_threat) //if threat is below any ruleset, its extended time
+	// var/greenshift = GLOB.dynamic_forced_extended || (threat_level < min_threat) //if threat is below any ruleset, its extended time
+	var/greenshift = SSgamemode.current_storyteller.disable_distribution // BANDASTATION EDIT - STORYTELLER
 	SSstation.generate_station_goals(greenshift ? INFINITY : CONFIG_GET(number/station_goal_budget))
 
 	var/list/datum/station_goal/goals = SSstation.get_station_goals()
@@ -398,7 +399,7 @@ SUBSYSTEM_DEF(dynamic)
 	if(!check_rights(R_ADMIN))
 		return
 
-	var/list/out = list("<TITLE>Threat Log</TITLE><B><font size='3'>Threat Log</font></B><br><B>Starting Threat:</B> [threat_level]<BR>")
+	var/list/out = list("<B><font size='3'>Threat Log</font></B><br><B>Starting Threat:</B> [threat_level]<BR>")
 
 	for(var/entry in threat_log)
 		if(istext(entry))
@@ -406,7 +407,7 @@ SUBSYSTEM_DEF(dynamic)
 
 	out += "<B>Remaining threat/threat_level:</B> [mid_round_budget]/[threat_level]"
 
-	usr << browse(out.Join(), "window=threatlog;size=700x500")
+	usr << browse(HTML_SKELETON_TITLE("Threat Log", out.Join()), "window=threatlog;size=700x500")
 
 /// Generates the threat level using lorentz distribution and assigns peaceful_percentage.
 /datum/controller/subsystem/dynamic/proc/generate_threat()
@@ -549,7 +550,7 @@ SUBSYSTEM_DEF(dynamic)
 		roundstart(roundstart_rules)
 
 	log_dynamic("[round_start_budget] round start budget was left, donating it to midrounds.")
-	threat_log += "[worldtime2text()]: [round_start_budget] round start budget was left, donating it to midrounds."
+	threat_log += "[gameTimestamp()]: [round_start_budget] round start budget was left, donating it to midrounds."
 	mid_round_budget += round_start_budget
 
 	var/starting_rulesets = ""
@@ -753,7 +754,7 @@ SUBSYSTEM_DEF(dynamic)
 	var/added_threat = ruleset.scale_up(roundstart_pop_ready, scaled_times)
 
 	if(ruleset.pre_execute(roundstart_pop_ready))
-		threat_log += "[worldtime2text()]: Roundstart [ruleset.name] spent [ruleset.cost + added_threat]. [ruleset.scaling_cost ? "Scaled up [ruleset.scaled_times]/[scaled_times] times." : ""]"
+		threat_log += "[gameTimestamp()]: Roundstart [ruleset.name] spent [ruleset.cost + added_threat]. [ruleset.scaling_cost ? "Scaled up [ruleset.scaled_times]/[scaled_times] times." : ""]"
 		if(ruleset.flags & ONLY_RULESET)
 			only_ruleset_executed = TRUE
 		if(ruleset.flags & HIGH_IMPACT_RULESET)
@@ -811,7 +812,7 @@ SUBSYSTEM_DEF(dynamic)
 		new_rule.load_templates()
 		if (new_rule.ready(forced))
 			if (!ignore_cost)
-				spend_midround_budget(new_rule.cost, threat_log, "[worldtime2text()]: Forced rule [new_rule.name]")
+				spend_midround_budget(new_rule.cost, threat_log, "[gameTimestamp()]: Forced rule [new_rule.name]")
 			new_rule.pre_execute(population)
 			if (new_rule.execute()) // This should never fail since ready() returned 1
 				if(new_rule.flags & HIGH_IMPACT_RULESET)

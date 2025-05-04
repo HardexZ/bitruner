@@ -8,6 +8,8 @@
 	attack_verb_simple = list("thump", "whomp", "bump")
 	w_class = WEIGHT_CLASS_SMALL
 	resistance_flags = FLAMMABLE
+	floor_placeable = TRUE
+	var/use_delay_override /// BANDASTATION EDIT: add `use_delay_override`
 	var/list/squeak_override //Weighted list; If you want your plush to have different squeak sounds use this
 	var/stuffed = TRUE //If the plushie has stuffing in it
 	var/obj/item/grenade/grenade //You can remove the stuffing from a plushie and add a grenade to it for *nefarious uses*
@@ -43,7 +45,7 @@
 
 /obj/item/toy/plush/Initialize(mapload)
 	. = ..()
-	AddComponent(/datum/component/squeak, squeak_override)
+	AddComponent(/datum/component/squeak, squeak_override, use_delay_override = use_delay_override) /// BANDASTATION EDIT: add `use_delay_override`
 	AddElement(/datum/element/bed_tuckable, mapload, 6, -5, 90)
 	AddElement(/datum/element/toy_talk)
 
@@ -124,7 +126,7 @@
 	else
 		to_chat(user, span_notice("You try to pet [src], but it has no stuffing. Aww..."))
 
-/obj/item/toy/plush/attackby(obj/item/I, mob/living/user, params)
+/obj/item/toy/plush/attackby(obj/item/I, mob/living/user, list/modifiers)
 	if(I.get_sharpness())
 		if(!grenade)
 			if(!stuffed)
@@ -676,7 +678,7 @@
 	)
 	AddElement(/datum/element/connect_loc, loc_connections)
 
-/obj/item/toy/plush/goatplushie/attackby(obj/item/cigarette/rollie/fat_dart, mob/user, params)
+/obj/item/toy/plush/goatplushie/attackby(obj/item/cigarette/rollie/fat_dart, mob/user, list/modifiers)
 	if(!istype(fat_dart))
 		return ..()
 	if(splat)
@@ -800,3 +802,15 @@
 	icon_state = "donkpocket"
 	attack_verb_continuous = list("donks")
 	attack_verb_simple = list("donk")
+
+/obj/item/toy/plush/human
+	name = "human plushie"
+	desc = "This is a felt plush of a human. All craftsmanship is of the lowest quality. The human is crying. The human is screaming."
+	icon_state = "plushie_human"
+	inhand_icon_state = null //i would rather not have a blue coder plushie inhand
+	attack_verb_continuous = list("screams at", "strikes", "bashes")
+	attack_verb_simple = list("scream at", "strike", "bash")
+	squeak_override = list(
+		'sound/mobs/humanoids/human/scream/malescream_2.ogg' = 10, //10% chance to scream, rare but not abysmal
+		'sound/items/weapons/smash.ogg' = 90,
+		)

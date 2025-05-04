@@ -23,6 +23,8 @@
 	var/objectives_to_generate = 3
 	/// Brain trauma that causes the obsession
 	var/datum/brain_trauma/special/obsessed/trauma
+	antag_flags = FLAG_FAKE_ANTAG // BANDASTATION EDIT - STORYTELLER
+
 
 /// Dummy antag datum that will show the cured obsessed to admins
 /datum/antagonist/former_obsessed
@@ -34,7 +36,7 @@
 	count_against_dynamic_roll_chance = FALSE
 	silent = TRUE
 	can_elimination_hijack = ELIMINATION_PREVENT
-	antag_flags = FLAG_FAKE_ANTAG
+	antag_flags = FLAG_FAKE_ANTAG | FLAG_ANTAG_CAP_IGNORE  // BANDASTATION EDIT - STORYTELLER
 
 /datum/antagonist/obsessed/admin_add(datum/mind/new_owner,mob/admin)
 	var/mob/living/carbon/C = new_owner.current
@@ -64,7 +66,9 @@
 	victim_dummy.set_hairstyle("Messy", update = TRUE)
 
 	var/icon/obsessed_icon = render_preview_outfit(preview_outfit)
-	obsessed_icon.Blend(icon('icons/effects/blood.dmi', "uniformblood"), ICON_OVERLAY)
+	var/icon/blood_icon = icon('icons/effects/blood.dmi', "uniformblood")
+	blood_icon.Blend(BLOOD_COLOR_RED, ICON_MULTIPLY)
+	obsessed_icon.Blend(blood_icon, ICON_OVERLAY)
 
 	var/icon/final_icon = finish_preview_icon(obsessed_icon)
 

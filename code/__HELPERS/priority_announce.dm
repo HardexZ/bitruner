@@ -13,7 +13,7 @@
 #define CHAT_ALERT_DEFAULT_SPAN(string) ("<div class='chat_alert_default'>" + string + "</div>")
 #define CHAT_ALERT_COLORED_SPAN(color, string) ("<div class='chat_alert_" + color + "'>" + string + "</div>")
 
-#define ANNOUNCEMENT_COLORS list("default", "green", "blue", "pink", "yellow", "orange", "red", "purple")
+#define ANNOUNCEMENT_COLORS list("default", "green", "blue", "pink", "yellow", "orange", "red", "purple", "white") // BANDASTATION EDIT - add "white"
 
 /**
  * Make a big red text announcement to
@@ -63,7 +63,7 @@
 				header += SUBHEADER_ANNOUNCEMENT_TITLE(title)
 		if(ANNOUNCEMENT_TYPE_CAPTAIN)
 			header = MAJOR_ANNOUNCEMENT_TITLE("Оповещение от капитана")
-			GLOB.news_network.submit_article(text, "Оповещение от капитана", "Станционные оповещения", null)
+			GLOB.news_network.submit_article(text, "Оповещение от капитана", NEWSCASTER_STATION_ANNOUNCEMENTS, null)
 		if(ANNOUNCEMENT_TYPE_SYNDICATE)
 			header = MAJOR_ANNOUNCEMENT_TITLE("Оповещение от капитана Синдиката")
 		else
@@ -90,9 +90,9 @@
 
 	if(isnull(sender_override) && players == GLOB.player_list)
 		if(length(title) > 0)
-			GLOB.news_network.submit_article(title + "<br><br>" + text, "[command_name()]", "Станционные оповещения", null)
+			GLOB.news_network.submit_article(title + "<br><br>" + text, "[command_name()]", NEWSCASTER_STATION_ANNOUNCEMENTS, null)
 		else
-			GLOB.news_network.submit_article(text, "[command_name()]: Сообщение", "Станционные оповещения", null)
+			GLOB.news_network.submit_article(text, "[command_name()]: Сообщение", NEWSCASTER_STATION_ANNOUNCEMENTS, null)
 
 /proc/print_command_report(text = "", title = null, announce=TRUE)
 	if(!title)
@@ -205,10 +205,12 @@
 		to_chat(target, announcement)
 		if(!should_play_sound || (should_play_sound_callback && !should_play_sound_callback.Invoke(target)))
 			continue
-
 		if(target.client?.prefs.read_preference(/datum/preference/toggle/sound_announcements))
-			// SEND_SOUND(target, sound(sound_to_play)) // Bandastion Removal
-			/// SS220 TTS START
+			// BANDASTATION EDIT START - TTS
+			if(!SStts220.is_enabled)
+				SEND_SOUND(target, sound(sound_to_play))
+				return
+
 			var/datum/tts_seed/announcement_tts_seed = tts_override?.tts_seed
 			if(isnull(announcement_tts_seed))
 				var/mob/living/silicon/ai/active_ai = DEFAULTPICK(active_ais(TRUE, null), null)
@@ -224,9 +226,11 @@
 				FALSE, \
 				list(/datum/singleton/sound_effect/announcement), \
 				null, \
-				sound_to_play \
+				sound_to_play, \
+				null, \
+				CHANNEL_TTS_ANNOUNCEMENT, \
 			)
-			/// SS220 TTS END
+			// BANDASTATION EDIT END - TTS
 
 #undef MAJOR_ANNOUNCEMENT_TITLE
 #undef MAJOR_ANNOUNCEMENT_TEXT

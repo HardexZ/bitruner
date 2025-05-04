@@ -130,7 +130,7 @@
 	var/modded_time = time * speed_mod
 
 
-	fail_prob = min(max(0, modded_time - (time * SURGERY_SLOWDOWN_CAP_MULTIPLIER)),99)//if modded_time > time * modifier, then fail_prob = modded_time - time*modifier. starts at 0, caps at 99
+	fail_prob = get_failure_probability(user, target, target_zone, tool, modded_time) //BANDASTATION EDIT - было: if modded_time > time * modifier, then fail_prob = modded_time - time*modifier. starts at 0, caps at 99 // BANDASTATION EDIT
 	modded_time = min(modded_time, time * SURGERY_SLOWDOWN_CAP_MULTIPLIER)//also if that, then cap modded_time at time*modifier
 
 	if(iscyborg(user))//any immunities to surgery slowdown should go in this check.
@@ -202,8 +202,6 @@
 	)
 
 /datum/surgery_step/proc/play_preop_sound(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
-	if(!preop_sound)
-		return
 	var/sound_file_use
 	if(islist(preop_sound))
 		for(var/typepath in preop_sound)//iterate and assign subtype to a list, works best if list is arranged from subtype first and parent last
@@ -212,7 +210,9 @@
 				break
 	else
 		sound_file_use = preop_sound
-	playsound(get_turf(target), sound_file_use, 75, TRUE, falloff_exponent = 12, falloff_distance = 1)
+	if(!sound_file_use)
+		return
+	playsound(target, sound_file_use, 75, TRUE, falloff_exponent = 12, falloff_distance = 1)
 
 /datum/surgery_step/proc/success(mob/user, mob/living/target, target_zone, obj/item/tool, datum/surgery/surgery, default_display_results = TRUE)
 	SEND_SIGNAL(user, COMSIG_MOB_SURGERY_STEP_SUCCESS, src, target, target_zone, tool, surgery, default_display_results)
@@ -224,6 +224,11 @@
 			span_notice("[capitalize(user.declent_ru(NOMINATIVE))] удалось!"),
 			span_notice("[capitalize(user.declent_ru(NOMINATIVE))] заканчивает."),
 		)
+	if(ishuman(user))
+		var/mob/living/carbon/human/surgeon = user
+		surgeon.add_blood_DNA_to_items(target.get_blood_dna_list(), ITEM_SLOT_GLOVES)
+	else
+		user.add_mob_blood(target)
 	return TRUE
 
 /datum/surgery_step/proc/play_success_sound(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)

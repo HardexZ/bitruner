@@ -55,7 +55,7 @@
 /obj/item/card/id/advanced/update_desc(updates)
 	. = ..()
 	if(applied_sticker?.id_card_desc)
-		desc += "<br>[applied_sticker.id_card_desc]"
+		desc = "[src::desc]<br>[applied_sticker.id_card_desc]"
 	else
 		desc = src::desc
 
@@ -91,6 +91,7 @@
 	desc = "Этим можно изменить внешний вид своей карты! Покажи службе безопасности какой ты стильный."
 	icon = 'modular_bandastation/objects/icons/obj/items/id_stickers.dmi'
 	icon_state = ""
+	w_class = WEIGHT_CLASS_SMALL
 	var/id_card_desc
 
 /obj/item/id_sticker/colored

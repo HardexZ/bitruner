@@ -20,8 +20,9 @@ GLOBAL_LIST_INIT(freqtospan, list(
 	"[FREQ_CTF_RED]" = "redteamradio",
 	"[FREQ_CTF_BLUE]" = "blueteamradio",
 	"[FREQ_CTF_GREEN]" = "greenteamradio",
-	"[FREQ_CTF_YELLOW]" = "yellowteamradio"
-	))
+	"[FREQ_CTF_YELLOW]" = "yellowteamradio",
+	"[FREQ_STATUS_DISPLAYS]" = "captaincast",
+))
 
 /**
  * What makes things... talk.
@@ -60,8 +61,7 @@ GLOBAL_LIST_INIT(freqtospan, list(
 	if(!message || message == "")
 		return
 	spans |= speech_span
-	if(!language)
-		language = get_selected_language()
+	language ||= get_selected_language()
 	message_mods[SAY_MOD_VERB] = say_mod(message, message_mods)
 	send_speech(message, message_range, src, bubble_type, spans, language, message_mods, forced = forced)
 
@@ -161,8 +161,7 @@ GLOBAL_LIST_INIT(freqtospan, list(
 	if(!stored_name[NAME_PART_INDEX]) //Otherwise, we just use whatever the name signal gives us.
 		SEND_SIGNAL(speaker, COMSIG_MOVABLE_MESSAGE_GET_NAME_PART, stored_name, visible_name)
 
-	namepart = "<span style='color: [speaker.chat_color]'>[stored_name[NAME_PART_INDEX] || speaker.GetVoice()]</span>" // Bandastation Addition: span with color
-
+	namepart = stored_name[NAME_PART_INDEX] || "[speaker.GetVoice()]"
 	//End name span.
 	var/endspanpart = "</span>"
 
@@ -180,7 +179,7 @@ GLOBAL_LIST_INIT(freqtospan, list(
 
 	messagepart = " <span class='message'>[messagepart]</span></span>"
 
-	return "[spanpart1][spanpart2][freqpart][languageicon][compose_track_href(speaker, namepart)][namepart][compose_job(speaker, message_language, raw_message, radio_freq)][endspanpart][messagepart]"
+	return "[spanpart1][spanpart2][freqpart][languageicon][compose_track_href(speaker, namepart)]["<span style='color: [speaker.chat_color]'>[namepart]</span>"][compose_job(speaker, message_language, raw_message, radio_freq)][endspanpart][messagepart]" // BANDASTATION Addition: span with color
 
 /atom/movable/proc/compose_track_href(atom/movable/speaker, message_langs, raw_message, radio_freq)
 	return ""
@@ -267,8 +266,16 @@ GLOBAL_LIST_INIT(freqtospan, list(
 		return "makes a strange sound."
 
 	if(!has_language(language))
+		var/list/mutual_languages
+		// Get what we can kinda understand, factor in any bonuses passed in from say mods
+		var/list/partially_understood_languages = get_partially_understood_languages()
+		if(LAZYLEN(partially_understood_languages))
+			mutual_languages = partially_understood_languages.Copy()
+			for(var/bonus_language in message_mods[LANGUAGE_MUTUAL_BONUS])
+				mutual_languages[bonus_language] = max(message_mods[LANGUAGE_MUTUAL_BONUS][bonus_language], mutual_languages[bonus_language])
+
 		var/datum/language/dialect = GLOB.language_datum_instances[language]
-		raw_message = dialect.scramble(raw_message)
+		raw_message = dialect.scramble_paragraph(raw_message, mutual_languages)
 
 	return raw_message
 
