@@ -206,58 +206,45 @@
 	desc = "Полотенце, сотканное из синтетической ткани, на взгляд шершавое и маленькое. Можно обмотать вокруг тела."
 	icon_state = "towel_short_alt"
 
-/obj/item/clothing/under/bubba_suit
-	name = "bloody business suit"
-	desc = "Деловой костюм. Теперь окрававленый."
+/obj/item/clothing/under/netrun
+	name = "Битраннерский элитный комбинезон Марго"
+	desc = "Этот комбинезон, разработанный в Транс-Солнечной Федерации и сделанный из сверхпрочного термостойкого нановолокна, является незаменимым атрибутом в жизни каждого уважающего себя битраннера. Его элегантный воротник лишь подчёркивает статусность его владельца, а диоидные нейроускорители оптимизируют работу биомонитора и сенсоров, улучшая скорость исполнения сетевых операций и отправку протоколов. Создатели этого комбинезона отдаёт настоящую дань уважения всем земным раннерам далёкого прошлого. \
+	Сзади на воротнике можно разглядеть выгравированную надпись чёрными чернилами: Подарок от: Компания \"Наномед Индастриз\". \
+	Кому: Маргарет Эванс."
 	icon = 'modular_bandastation/objects/icons/obj/clothing/under/under.dmi'
 	worn_icon = 'modular_bandastation/objects/icons/mob/clothing/under/under.dmi'
-	icon_state = "bubba_suit"
+	icon_state = "netrun"
 
-/obj/item/clothing/under/tyler_suit
-	name = "blue hawaiian shirt"
-	desc = "Голубая гавайская рубашка с черными штанами в комплете."
+/obj/item/clothing/under/tshirt_black
+	name = "black T-shirt"
+	desc = "Классика в мире одежды, предназначенной для повседневного ношения. Практичность и стиль в одном экземпляре."
 	icon = 'modular_bandastation/objects/icons/obj/clothing/under/under.dmi'
 	worn_icon = 'modular_bandastation/objects/icons/mob/clothing/under/under.dmi'
-	icon_state = "tyler_suit"
+	icon_state = "tshirt_black"
+	armor_type = /datum/armor/clothing_under/security_head_of_security
+	can_adjust = FALSE
 
-/obj/item/clothing/under/joker_suit
-	name = "shirt with green vest"
-	desc = "Светло голубая рубашка с зеленым жилетом."
+/obj/item/clothing/under/hoodie_black
+	name = "black hoodie"
+	desc = "Классика в мире одежды, предназначенной для повседневного ношения. Практичность и стиль в одном экземпляре."
 	icon = 'modular_bandastation/objects/icons/obj/clothing/under/under.dmi'
 	worn_icon = 'modular_bandastation/objects/icons/mob/clothing/under/under.dmi'
-	icon_state = "joker_suit"
+	icon_state = "hoodie_black"
+	armor_type = /datum/armor/clothing_under/security_head_of_security
+	can_adjust = FALSE
 
-/obj/item/clothing/under/sailor_dress
-	name = "moon skirt"
-	desc = "Юбка дающая силы лунной призмы."
+/obj/item/clothing/under/shirt_black
+	name = "black shirt"
+	desc = "Классика в мире одежды, предназначенной для повседневного ношения. Практичность и стиль в одном экземпляре."
 	icon = 'modular_bandastation/objects/icons/obj/clothing/under/under.dmi'
 	worn_icon = 'modular_bandastation/objects/icons/mob/clothing/under/under.dmi'
-	icon_state = "sailor_dress"
+	icon_state = "shirt_black"
+	armor_type = /datum/armor/clothing_under/security_head_of_security
 
-/obj/item/clothing/under/jinx_suit
-	name = "underground  outlaw costume"
-	desc = "В этом прикиде хочется совершать преступления."
+/obj/item/clothing/under/shirt_white
+	name = "white shirt"
+	desc = "Классика в мире одежды, предназначенной для повседневного ношения. Практичность и стиль в одном экземпляре."
 	icon = 'modular_bandastation/objects/icons/obj/clothing/under/under.dmi'
 	worn_icon = 'modular_bandastation/objects/icons/mob/clothing/under/under.dmi'
-	icon_state = "jinx_suit"
-
-/obj/item/clothing/under/drunkard_suit
-	name = "drunkard suit"
-	desc = "Мешковатые штаны, рваный пиджак и вечная растерянность в складках."
-	icon = 'modular_bandastation/objects/icons/obj/clothing/under/under.dmi'
-	worn_icon = 'modular_bandastation/objects/icons/mob/clothing/under/under.dmi'
-	icon_state = "drunkard_suit"
-
-/obj/item/clothing/under/sailor_suit
-	name = "sailor suit"
-	desc = "Полосатая тельняшка, пропитанная дешёвым ромом, и штаны, которые видели больше драк, чем морей."
-	icon = 'modular_bandastation/objects/icons/obj/clothing/under/under.dmi'
-	worn_icon = 'modular_bandastation/objects/icons/mob/clothing/under/under.dmi'
-	icon_state = "sailor_suit"
-
-/obj/item/clothing/under/baba_suit
-	name = "baba suit"
-	desc = "Лоскутный халат, криво завязанный платок и юбка, собранная из всего, что валялось в избе."
-	icon = 'modular_bandastation/objects/icons/obj/clothing/under/under.dmi'
-	worn_icon = 'modular_bandastation/objects/icons/mob/clothing/under/under.dmi'
-	icon_state = "baba_suit"
+	icon_state = "shirt_white"
+	armor_type = /datum/armor/clothing_under/security_head_of_security
