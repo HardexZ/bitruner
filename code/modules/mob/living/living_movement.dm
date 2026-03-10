@@ -73,7 +73,12 @@
 	return ..()
 
 /mob/living/proc/update_move_intent_slowdown()
-	add_movespeed_modifier((move_intent == MOVE_INTENT_WALK)? /datum/movespeed_modifier/config_walk_run/walk : /datum/movespeed_modifier/config_walk_run/run)
+	add_movespeed_modifier(get_move_intent_slowdown())
+
+/mob/living/proc/get_move_intent_slowdown()
+	if(move_intent == MOVE_INTENT_WALK)
+		return /datum/movespeed_modifier/config_walk_run/walk
+	return /datum/movespeed_modifier/config_walk_run/run
 
 /mob/living/proc/update_turf_movespeed(turf/open/turf)
 	if(isopenturf(turf) && !HAS_TRAIT(turf, TRAIT_TURF_IGNORE_SLOWDOWN))
@@ -156,3 +161,21 @@
 	if(stat > SOFT_CRIT)
 		return
 	return ..()
+// BANDASTATION ADDITION: Limp Quirk
+/mob/living/toggle_move_intent(new_intent)
+
+	if(HAS_TRAIT(src, TRAIT_LIMP))
+
+		var/target_intent = new_intent
+
+		if(!target_intent)
+			if(move_intent == MOVE_INTENT_RUN)
+				target_intent = MOVE_INTENT_WALK
+			else
+				target_intent = MOVE_INTENT_RUN
+
+		if(SEND_SIGNAL(src, COMSIG_MOB_PRE_TOGGLE_MOVE_INTENT, target_intent) & COMPONENT_PREVENT_TOGGLE_MOVE_INTENT)
+			return
+
+	return ..()
+// BANDASTATION ADDITION: END

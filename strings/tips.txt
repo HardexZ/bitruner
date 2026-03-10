@@ -204,8 +204,8 @@
 Будучи главой службы безопасности, не позволяйте власти ударить вам в голову. У вас может быть высокий доступ, отличное снаряжение и миниатюрная армия, но быть ужасным человеком без веской причины - основание для бана.
 Будучи главой службы безопасности, вы должны координировать действия своих сотрудников, чтобы справиться с любой угрозой, возникшей на станции. Иногда это означает использование арсенала, чтобы справиться с блобом, иногда - быть беспощадным во время революции или культа.
 Будучи главой службы безопасности, вы можете назначать казни или принудительную боргизацию, но для этого может потребоваться одобрение капитана.
-Будучи адвокатом, попытайтесь договориться с смотрителем, если приговор кажется слишком большим для преступления.
-Будучи адвокатом, вы можете попытаться убедить капитана и главу службы безопасности проводить процессы над заключенными в зале суда.
+Будучи юристом, попытайтесь договориться с смотрителем, если приговор кажется слишком большим для преступления.
+Будучи юристом, вы можете попытаться убедить капитана и главу службы безопасности проводить процессы над заключенными в зале суда.
 Будучи сбойным ИИ, попробуйте залить станцию плазменным пламенем, чтобы уничтожить большую часть экипажа и дать вам возможность добить тех немногих спасшихся в защитных скафандрах.
 Будучи сбойным ИИ, вы можете перенестись в ЛКП, если ситуация станет плохой. Это деактивирует ваше устройство судного дня, если оно активно.
 Будучи сбойным ИИ, вы должны либо приказать своим боргам разобрать консоль для управления боргами, либо взорвать ее сами, чтобы защитить их.
@@ -316,3 +316,16 @@
 Вы можете комбинировать реагент ковра с различными реагентами, такими как масло и цианид, чтобы создать уникальные типы ковров.
 Вы можете испечь праздничный торт, а затем разогреть его в микроволновке, чтобы создать легендарный торт-шляпу. Затем вы можете соединить его с энергетическим мечом, чтобы создать энерготорт.
 Вы можете быстро удалить радиацию с предметов в комнате, выпустив водяной пар в воздух (включая надетые предметы).
+You can recolor certain items like jumpsuits and gloves in washing machines by also throwing in a crayon.
+You can right click someone with wire cutters, jaws of life, and box cutters to instantly snap cablecuffs or zipties. The jaws can even instantly break handcuffs!
+You can screwdriver any non-chemical grenade to shorten fuses from 5 seconds, to 3 seconds, to instant boom! Nobody ever expects this.
+You can spray a fire extinguisher, throw items or fire a gun while floating through space to change your direction. Simply fire opposite to where you want to go.
+You can swap floor tiles by holding a crowbar in one hand and a stack of tiles in the other.
+You can use :I / .I to speak through any intercom within arm's reach. This allows you to talk into it without manually turning on its microphone, and even works if you are in critical condition (but not unconscious)!
+You can use :L / .L or :R / .R to speak through an item being held in your left or right hand respectively. This allows you to talk into a station-bounced radio without manually turning on its microphone, or even to pretend to be a toy!
+You can use a machine in the vault to deposit cash or rob Cargo's department funds.
+You can use a multitool in your hand to track the area's local APC.
+You can use a screwdriver to remove an encryption key from a radio headset. The key can then be installed into your own headset, an intercom, or even a station-bounced radio, allowing you to eavesdrop on secure communications.
+You can use an upgraded microwave to charge your PDA!
+You don't need to destroy a Spacecoin machine to make your funds stop draining. Swiping your ID on it will stop the withdrawal.
+You'll quickly lose your interest in the game if you play to win and kill. If you find yourself doing this, take a step back and talk to people - it's a much better experience!

@@ -3,12 +3,14 @@
 //General
 #define COMSIG_KB_ACTIVATED (1<<0)
 #define COMSIG_KB_EMOTE "keybinding_emote_down"
+#define UNBOUND_KEY "Unbound"
 
 ///Signal sent when a keybind is deactivated
 #define DEACTIVATE_KEYBIND(A) "[A]_DEACTIVATED"
 
 //Admin
 #define COMSIG_KB_ADMIN_ASAY_DOWN "keybinding_admin_asay_down"
+#define COMSIG_KB_ADMIN_MSAY_DOWN "keybinding_admin_msay_down" // BANDASTATION ADDITION - Mentors
 #define COMSIG_KB_ADMIN_DSAY_DOWN "keybinding_admin_dsay_down"
 #define COMSIG_KB_ADMIN_TOGGLEBUILDMODE_DOWN "keybinding_admin_togglebuildmode_down"
 #define COMSIG_KB_ADMIN_AGHOST_DOWN "keybinding_admin_aghost_down"
@@ -28,6 +30,7 @@
 #define COMSIG_KB_CLIENT_SCREENSHOT_DOWN "keybinding_client_screenshot_down"
 #define COMSIG_KB_CLIENT_FULLSCREEN_DOWN "keybinding_client_fullscreen_down"
 #define COMSIG_KB_CLIENT_MINIMALHUD_DOWN "keybinding_client_minimalhud_down"
+#define COMSIG_KB_CLIENT_CLOSEUI_DOWN "keybinding_client_closeui_down"
 
 //Communication
 

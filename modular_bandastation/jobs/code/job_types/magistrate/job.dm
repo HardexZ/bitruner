@@ -1,12 +1,11 @@
 /datum/job/magistrate
 	title  = JOB_MAGISTRATE
 	description = "Вершите правосудие на станции, поддерживайте соблюдение закона."
-	department_head = list("Центральное командование")
 	head_announce = list(RADIO_CHANNEL_JUSTICE)
 	auto_deadmin_role_flags = DEADMIN_POSITION_HEAD|DEADMIN_POSITION_SECURITY
 	faction = FACTION_STATION
 	total_positions = 1
-	spawn_positions = 0
+	spawn_positions = 1
 	supervisors = "Центральное командование"
 	minimal_player_age = 14
 	exp_requirements = 1500

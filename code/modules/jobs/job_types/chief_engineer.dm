@@ -3,18 +3,17 @@
 	description = "Руководите инженерным отделом, следите, чтобы никакое оборудование не было украдено, \
 		чтобы кристалл Суперматерии не взорвался, а также обслуживайте телекоммуникации."
 	auto_deadmin_role_flags = DEADMIN_POSITION_HEAD
-	department_head = list(JOB_CAPTAIN)
-	head_announce = list("Engineering")
+	head_announce = RADIO_CHANNEL_ENGINEERING
 	faction = FACTION_STATION
 	total_positions = 1
 	spawn_positions = 1
 	supervisors = JOB_CAPTAIN_RU
 	req_admin_notify = 1
 	minimal_player_age = 7
-	exp_requirements = 180
+	exp_requirements = 1200
 	exp_required_type = EXP_TYPE_CREW
 	exp_required_type_department = EXP_TYPE_ENGINEERING
-	exp_granted_type = EXP_TYPE_CREW
+	exp_granted_type = EXP_TYPE_COMMAND
 	config_tag = "CHIEF_ENGINEER"
 
 	outfit = /datum/outfit/job/ce
@@ -69,14 +68,12 @@
 	backpack_contents = list(
 		/obj/item/melee/baton/telescopic/silver = 1,
 		/obj/item/construction/rcd/ce = 1,
-		// /obj/item/extinguisher/mini = 1, // BANDASTATION EDIT - Bring back T2 tools to CE
-		// /obj/item/analyzer = 1, // BANDASTATION EDIT - Bring back T2 tools to CE
 	)
 	belt = /obj/item/storage/belt/utility/chief/full
 	ears = /obj/item/radio/headset/heads/ce
 	gloves = /obj/item/clothing/gloves/color/black
 	head = /obj/item/clothing/head/utility/hardhat/welding/white/up
-	shoes = /obj/item/clothing/shoes/sneakers/brown
+	shoes = /obj/item/clothing/shoes/workboots
 	l_pocket = /obj/item/modular_computer/pda/heads/ce
 
 	backpack = /obj/item/storage/backpack/industrial

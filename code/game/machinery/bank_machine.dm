@@ -54,10 +54,13 @@
 	else if(istype(weapon, /obj/item/coin))
 		var/obj/item/coin/inserted_coin = weapon
 		value = inserted_coin.value
+	else if(istype(weapon, /obj/item/poker_chip))
+		var/obj/item/poker_chip/inserted_chip = weapon
+		value = inserted_chip.get_item_credit_value()
 	if(value)
 		if(synced_bank_account)
 			synced_bank_account.adjust_money(value)
-			say("Credits deposited! The [synced_bank_account.account_holder] is now [synced_bank_account.account_balance] cr.")
+			say("[MONEY_NAME_CAPITALIZED] deposited! The [synced_bank_account.account_holder] is now [synced_bank_account.account_balance][MONEY_SYMBOL].")
 		qdel(weapon)
 		return
 	return ..()
@@ -115,7 +118,7 @@
 				say("Error: Console not in reach of station, withdrawal cannot begin.")
 			. = TRUE
 		if("halt")
-			say("Station credit withdrawal halted.")
+			say("Station credits withdrawal halted.")
 			end_siphon()
 			. = TRUE
 
@@ -128,8 +131,9 @@
 /obj/machinery/computer/bank_machine/proc/end_siphon()
 	siphoning = FALSE
 	unauthorized = FALSE
-	if(syphoning_credits > 0)
-		new /obj/item/holochip(drop_location(), syphoning_credits) //get the loot
+	var/atom/droploc = drop_location()
+	for(var/cash_typepath in credits_to_spacecash(syphoning_credits))
+		new cash_typepath(droploc)
 	syphoning_credits = 0
 
 /obj/machinery/computer/bank_machine/proc/start_siphon(mob/living/carbon/user)

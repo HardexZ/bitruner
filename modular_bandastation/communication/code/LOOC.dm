@@ -21,7 +21,8 @@ GLOBAL_VAR_INIT(looc_allowed, TRUE)
 
 /datum/tgui_say/delegate_speech(entry, channel)
 	if(channel == LOOC_CHANNEL)
-		client.looc(entry)
+		ASYNC
+			client.looc(entry)
 		return TRUE
 	. = ..()
 
@@ -30,14 +31,12 @@ GLOBAL_VAR_INIT(looc_allowed, TRUE)
 /client/verb/looc(msg as text)
 	set name = "LOOC"
 	set desc = "Local OOC, seen only by those in view."
-	set category = "OOC"
 
 	looc_message(msg)
 
 /client/verb/looc_wallpierce(msg as text)
 	set name = "LOOC (Wallpierce)"
 	set desc = "Local OOC, seen by anyone within 7 tiles of you."
-	set category = "OOC"
 
 	looc_message(msg, TRUE)
 
@@ -72,7 +71,7 @@ GLOBAL_VAR_INIT(looc_allowed, TRUE)
 
 	msg = emoji_parse(msg)
 
-	mob.log_talk(msg,LOG_OOC, tag="LOOC")
+	mob.log_talk(msg, LOG_LOOC, tag="LOOC")
 	var/list/heard
 	if(wall_pierce)
 		heard = get_hearers_in_range(LOOC_RANGE, mob.get_top_level_mob())

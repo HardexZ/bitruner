@@ -60,7 +60,7 @@
 /datum/proc/p_themselves(temp_gender)
 	return "itself"
 
-/datum/proc/plural_s(pluralize)
+/proc/plural_s(pluralize)
 	switch(copytext_char(pluralize, -2))
 		if ("ss")
 			return "es"
@@ -411,7 +411,7 @@
 	return gender
 
 /mob/living/carbon/human/get_visible_gender()
-	if(HAS_TRAIT(src, TRAIT_UNKNOWN))
+	if(HAS_TRAIT(src, TRAIT_UNKNOWN_APPEARANCE))
 		return PLURAL
 	// If both face and uniform are hidden, can't assess gender
 	if(obscured_slots & (HIDEFACE|HIDEJUMPSUIT) == (HIDEFACE|HIDEJUMPSUIT))

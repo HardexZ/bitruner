@@ -248,3 +248,37 @@
 	worn_icon = 'modular_bandastation/objects/icons/mob/clothing/under/under.dmi'
 	icon_state = "shirt_white"
 	armor_type = /datum/armor/clothing_under/security_head_of_security
+
+/obj/item/clothing/under/syndicate/rus_army/berezka
+	name = "Camouflaged summer camouflage jumpsuit Berezka"
+	desc = "Камуфлированный летний маскировочный костюм, или же КЛМК, выполнен в камуфляже «Берёзка»"
+	icon = 'modular_bandastation/objects/icons/obj/clothing/under/ussp.dmi'
+	icon_state = "ussp_berezka"
+	worn_icon = 'modular_bandastation/objects/icons/mob/clothing/under/ussp.dmi'
+
+/obj/item/clothing/under/syndicate/rus_army/flora
+	name = "Camouflaged summer camouflage jumpsuit Flora"
+	desc = "Камуфлированный летний маскировочный костюм, или же КЛМК, выполнен в камуфляже «Флора»"
+	icon = 'modular_bandastation/objects/icons/obj/clothing/under/ussp.dmi'
+	icon_state = "ussp_flora"
+	worn_icon = 'modular_bandastation/objects/icons/mob/clothing/under/ussp.dmi'
+
+// MARK: SYNDICATE
+/obj/item/clothing/under/mb_under
+	name = "nanofiber jumpsuit"
+	desc = "Элегантный нательный костюм из высокотехнологичного материала с символом «S». Удобен и практичен."
+	icon = 'modular_bandastation/objects/icons/obj/clothing/under/under.dmi'
+	worn_icon = 'modular_bandastation/objects/icons/mob/clothing/under/under.dmi'
+	icon_state = "mb_under"
+	lefthand_file = 'modular_bandastation/objects/icons/mob/inhands/clothing_left_hand.dmi'
+	righthand_file = 'modular_bandastation/objects/icons/mob/inhands/clothing_right_hand.dmi'
+	inhand_icon_state = "mb_under"
+	armor_type = /datum/armor/clothing_under/syndicate_advanced
+
+/datum/armor/clothing_under/syndicate_advanced
+	melee = 30
+	bullet = 30
+	energy = 30
+	fire = 50
+	acid = 40
+	wound = 30

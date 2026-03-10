@@ -144,7 +144,7 @@
 	if(owner.on_fire)
 		return
 
-	return "[owner.p_They()] [owner.p_are()] covered in something flammable."
+	return "[capitalize(owner.ru_p_they())] [genderize_ru(owner.gender, "покрыт", "покрыта", "покрыто", "покрыты")] чем-то легковоспламеняющимся."
 
 /datum/status_effect/fire_handler/fire_stacks/proc/owner_touched_sparks()
 	SIGNAL_HANDLER
@@ -170,6 +170,7 @@
 
 	var/decay_multiplier = HAS_TRAIT(owner, TRAIT_HUSK) ? 2 : 1 // husks decay twice as fast
 	adjust_stacks(owner.fire_stack_decay_rate * decay_multiplier * seconds_between_ticks)
+	SEND_SIGNAL(owner, COMSIG_FIRE_STACKS_UPDATED, stacks)
 
 	if(stacks <= 0)
 		qdel(src)
@@ -259,7 +260,7 @@
 
 	on_fire = TRUE
 	if(!silent)
-		owner.visible_message(span_warning("[owner] catches fire!"), span_userdanger("You're set on fire!"))
+		owner.visible_message(span_warning("[owner.declent_ru(NOMINATIVE)] загорается!"), span_userdanger("Вы загорелись!"))
 
 	if(moblight_type)
 		if(moblight)
@@ -280,7 +281,7 @@
 	owner.clear_mood_event("on_fire")
 	SEND_SIGNAL(owner, COMSIG_LIVING_EXTINGUISHED, owner)
 	cache_stacks()
-	for(var/obj/item/equipped in (owner.get_equipped_items(INCLUDE_HELD)))
+	for(var/obj/item/equipped as anything in owner.get_equipped_items(INCLUDE_HELD|INCLUDE_PROSTHETICS|INCLUDE_ABSTRACT))
 		equipped.extinguish()
 
 /datum/status_effect/fire_handler/fire_stacks/on_remove()
@@ -350,7 +351,7 @@
 	REMOVE_TRAIT(owner, TRAIT_NO_SLIP_WATER, TRAIT_STATUS_EFFECT(id))
 
 /datum/status_effect/fire_handler/wet_stacks/get_examine_text()
-	return "[owner.p_They()] look[owner.p_s()] a little soaked."
+	return "[capitalize(owner.ru_p_they())] выглядит немного [genderize_ru(owner.gender, "мокрым", "мокрой", "мокрым", "мокрыми")]."
 
 /datum/status_effect/fire_handler/wet_stacks/tick(seconds_between_ticks)
 	var/decay = HAS_TRAIT(owner, TRAIT_WET_FOR_LONGER) ? -0.035 : -0.5

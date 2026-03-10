@@ -28,13 +28,13 @@ GLOBAL_LIST_INIT(permission_action_types, list(
 
 	output += {"
 		<a href='byond://?_src_=holder;[HrefToken()];editrightsbrowser=1'>\
-			[action == PERMISSIONS_PAGE_PERMISSIONS ? "<b>\[Permissions\]</b": "\[Permissions\]"]
+			[action == PERMISSIONS_PAGE_PERMISSIONS ? "<b>\[Permissions\]</b>": "\[Permissions\]"]
 		</a>
 		[new_line]<a href='byond://?_src_=holder;[HrefToken()];editrightsbrowserranks=1'>
-			[action == PERMISSIONS_PAGE_RANKS ? "<b>\[Ranks\]</b": "\[Ranks\]"]
+			[action == PERMISSIONS_PAGE_RANKS ? "<b>\[Ranks\]</b>": "\[Ranks\]"]
 		</a>
 		[new_line]<a href='byond://?_src_=holder;[HrefToken()];editrightsbrowserlogging=1;editrightslogpage=0'>
-			[action == PERMISSIONS_PAGE_LOGGING ? "<b>\[Logging\]</b": "\[Logging\]"]
+			[action == PERMISSIONS_PAGE_LOGGING ? "<b>\[Logging\]</b>": "\[Logging\]"]
 		</a>
 		[new_line]<a href='byond://?_src_=holder;[HrefToken()];editrightsbrowserhousekeep=1'>
 			[action == PERMISSIONS_PAGE_HOUSEKEEPING ? "<b>\[Housekeeping\]</b>": "\[Housekeeping\]"]
@@ -115,7 +115,7 @@ GLOBAL_LIST_INIT(permission_action_types, list(
 			<hr style='background:#000000; border:0; height:3px'>
 		"}
 		// First we're gonna collect admins by rank, for sorting purposes
-		var/datum/db_query/query_extract_admins = SSdbcore.NewQuery("SELECT IFNULL((SELECT byond_key FROM [format_table_name("player")] WHERE [format_table_name("player")].ckey = [format_table_name("admin")].ckey), ckey), [format_table_name("admin")].`rank` FROM [format_table_name("admin")]")
+		var/datum/db_query/query_extract_admins = SSdbcore.NewQuery("SELECT IFNULL((SELECT byond_key FROM [format_table_name("player")] WHERE [format_table_name("player")].ckey = [format_table_name(CONFIG_GET(string/admin_table))].ckey), ckey), [format_table_name(CONFIG_GET(string/admin_table))].`rank` FROM [format_table_name(CONFIG_GET(string/admin_table))]") // BANDASTATION EDIT - Prime Admins
 		if(!query_extract_admins.warn_execute())
 			qdel(query_extract_admins)
 			return
@@ -304,7 +304,7 @@ GLOBAL_LIST_INIT(permission_action_types, list(
 		// We're gonna sanity check admin rank info, yea?
 		// We're pulling from the db as a source of truth here, instead of trusting the local lists
 		// First, pull all admin ranks which are used
-		var/datum/db_query/query_extract_admins = SSdbcore.NewQuery("SELECT IFNULL((SELECT byond_key FROM [format_table_name("player")] WHERE [format_table_name("player")].ckey = [format_table_name("admin")].ckey), ckey), [format_table_name("admin")].`rank` FROM [format_table_name("admin")]")
+		var/datum/db_query/query_extract_admins = SSdbcore.NewQuery("SELECT IFNULL((SELECT byond_key FROM [format_table_name("player")] WHERE [format_table_name("player")].ckey = [format_table_name(CONFIG_GET(string/admin_table))].ckey), ckey), [format_table_name(CONFIG_GET(string/admin_table))].`rank` FROM [format_table_name(CONFIG_GET(string/admin_table))]") // BANDASTATION EDIT - Prime Admins
 		if(!query_extract_admins.warn_execute())
 			qdel(query_extract_admins)
 			return
@@ -489,7 +489,7 @@ GLOBAL_LIST_INIT(permission_action_types, list(
 		return
 	//if an admin exists without a datum they won't be caught by the above
 	var/datum/db_query/query_admin_in_db = SSdbcore.NewQuery(
-		"SELECT 1 FROM [format_table_name("admin")] WHERE ckey = :ckey",
+		"SELECT 1 FROM [format_table_name(CONFIG_GET(string/admin_table))] WHERE ckey = :ckey", // BANDASTATION EDIT - Prime Admins
 		list("ckey" = .)
 	)
 	if(!query_admin_in_db.warn_execute())
@@ -501,7 +501,7 @@ GLOBAL_LIST_INIT(permission_action_types, list(
 		return FALSE
 	QDEL_NULL(query_admin_in_db)
 	var/datum/db_query/query_add_admin = SSdbcore.NewQuery(
-		"INSERT INTO [format_table_name("admin")] (ckey, `rank`) VALUES (:ckey, 'NEW ADMIN')",
+		"INSERT INTO [format_table_name(CONFIG_GET(string/admin_table))] (ckey, `rank`) VALUES (:ckey, 'NEW ADMIN')", // BANDASTATION EDIT - Prime Admins
 		list("ckey" = .)
 	)
 	if(!query_add_admin.warn_execute())
@@ -537,7 +537,7 @@ GLOBAL_LIST_INIT(permission_action_types, list(
 		log_admin(m2)
 		return
 	var/datum/db_query/query_remove_admin = SSdbcore.NewQuery(
-		"DELETE FROM [format_table_name("admin")] WHERE ckey = :ckey",
+		"DELETE FROM [format_table_name(CONFIG_GET(string/admin_table))] WHERE ckey = :ckey", // BANDASTATION EDIT - Prime Admins
 		list("ckey" = admin_ckey)
 	)
 	if(!query_remove_admin.warn_execute())
@@ -626,6 +626,22 @@ GLOBAL_LIST_INIT(permission_action_types, list(
 		var/next_rank = input("Please select a rank, or select [RANK_DONE] if you are finished.") as null|anything in display_rank_names
 
 		if (isnull(next_rank))
+			// SS220 EDIT START - FIX
+			// Если это НОВЫЙ админ и запись уже создана в БД,
+			// не оставляем NEW ADMIN висеть
+			if(use_db && !target_holder)
+				var/datum/db_query/query_remove_admin = SSdbcore.NewQuery(
+					"DELETE FROM [format_table_name(CONFIG_GET(string/admin_table))] WHERE ckey = :ckey",
+					list("ckey" = admin_ckey)
+				)
+				if(!query_remove_admin.warn_execute()){
+					qdel(query_remove_admin)
+					to_chat(usr, span_danger("Ошибка в запросе чистки при некорректной записи добавления нового администратора. Попробуйте добавить его еще раз, если права не выданы - сообщите разработчику с правами к БД, он разберется. Наверное. \[PERMISSIONEDIT next_rank\]"), confidential = TRUE)
+					return
+				}
+				QDEL_NULL(query_remove_admin)
+				to_chat(usr, span_danger("Запись о новом администраторе была удалена, так как ему не был присвоен ранг. Попробуйте еще раз. \[PERMISSIONEDIT next_rank\]"), confidential = TRUE)
+			// SS220 EDIT START - FIX
 			return
 
 		if (next_rank == RANK_DONE)
@@ -677,7 +693,7 @@ GLOBAL_LIST_INIT(permission_action_types, list(
 		//if a player was tempminned before having a permanent change made to their rank they won't yet be in the db
 		var/old_rank
 		var/datum/db_query/query_admin_in_db = SSdbcore.NewQuery(
-			"SELECT `rank` FROM [format_table_name("admin")] WHERE ckey = :admin_ckey",
+			"SELECT `rank` FROM [format_table_name(CONFIG_GET(string/admin_table))] WHERE ckey = :admin_ckey", // BANDASTATION EDIT - Prime Admins
 			list("admin_ckey" = admin_ckey)
 		)
 		if(!query_admin_in_db.warn_execute())
@@ -720,7 +736,7 @@ GLOBAL_LIST_INIT(permission_action_types, list(
 				return
 			QDEL_NULL(query_add_rank_log)
 		var/datum/db_query/query_change_rank = SSdbcore.NewQuery(
-			"UPDATE [format_table_name("admin")] SET `rank` = :new_rank WHERE ckey = :admin_ckey",
+			"UPDATE [format_table_name(CONFIG_GET(string/admin_table))] SET `rank` = :new_rank WHERE ckey = :admin_ckey", // BANDASTATION EDIT - Prime Admins
 			list("new_rank" = joined_rank, "admin_ckey" = admin_ckey)
 		)
 		if(!query_change_rank.warn_execute())
@@ -962,7 +978,7 @@ GLOBAL_LIST_INIT(permission_action_types, list(
 
 	if(!local_only_deletion)
 		var/datum/db_query/query_admins_with_rank = SSdbcore.NewQuery(
-			"SELECT 1 FROM [format_table_name("admin")] WHERE `rank` = :admin_rank",
+			"SELECT 1 FROM [format_table_name(CONFIG_GET(string/admin_table))] WHERE `rank` = :admin_rank",  // BANDASTATION EDIT - Prime Admins
 			list("admin_rank" = admin_rank)
 		)
 		if(!query_admins_with_rank.warn_execute())

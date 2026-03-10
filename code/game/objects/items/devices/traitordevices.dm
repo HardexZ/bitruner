@@ -315,9 +315,13 @@ effective or pretty fucking useless.
 	actions_types = list(/datum/action/item_action/stealth_mode/weaker)
 
 /// Checks if a given atom is in range of a radio jammer, returns TRUE if it is.
-/proc/is_within_radio_jammer_range(atom/source)
+/proc/is_within_radio_jammer_range(atom/source, freq) // BANDASTATION EDIT - Jammer whitelisted channels: added `freq`
 	for(var/obj/item/jammer/jammer as anything in GLOB.active_jammers)
 		if(IN_GIVEN_RANGE(source, jammer, jammer.range))
+			//BANDASTATION EDIT START - Jammer whitelisted channels
+			if(freq in jammer.whitelisted_frequencies)
+				continue
+			//BANDASTATION EDIT END
 			return TRUE
 	return FALSE
 
@@ -337,6 +341,11 @@ effective or pretty fucking useless.
 	/// The delay between using the disruptor wave
 	var/jam_cooldown_duration = 15 SECONDS
 	COOLDOWN_DECLARE(jam_cooldown)
+
+	/// BANDASTATION EDIT ADD: Jammer WL Channel
+	var/list/whitelisted_frequencies = list(
+		FREQ_SYNDICATE
+	)
 
 /obj/item/jammer/Initialize(mapload)
 	. = ..()
@@ -404,6 +413,7 @@ effective or pretty fucking useless.
 	desc = "A jury-rigged device that disrupts nearby radio communication. Its crude construction provides a significantly smaller area of effect compared to its Syndicate counterpart."
 	range = 5
 	disruptor_range = 3
+	custom_materials = list(/datum/material/iron = SMALL_MATERIAL_AMOUNT * 0.5, /datum/material/glass = SMALL_MATERIAL_AMOUNT * 0.5)
 
 /obj/item/jammer/makeshift/Initialize(mapload)
 	. = ..()
@@ -428,7 +438,7 @@ effective or pretty fucking useless.
 
 /obj/machinery/porta_turret/syndicate/toolbox/examine(mob/user)
 	. = ..()
-	if(faction_check(faction, user.faction))
+	if(faction_check_atom(user))
 		. += span_notice("You can repair it by <b>left-clicking</b> with a combat wrench.")
 		. += span_notice("You can fold it by <b>right-clicking</b> with a combat wrench.")
 
@@ -493,7 +503,7 @@ effective or pretty fucking useless.
 		qdel(src)
 
 /obj/machinery/porta_turret/syndicate/toolbox/ui_status(mob/user, datum/ui_state/state)
-	if(faction_check(user.faction, faction))
+	if(faction_check_atom(user))
 		return ..()
 
 	return UI_CLOSE

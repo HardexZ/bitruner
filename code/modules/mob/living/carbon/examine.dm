@@ -6,14 +6,14 @@
 	return null
 
 /mob/living/carbon/examine(mob/user)
-	if(HAS_TRAIT(src, TRAIT_UNKNOWN))
+	if(HAS_TRAIT(src, TRAIT_UNKNOWN_APPEARANCE) && !isobserver(user))
 		return list(span_warning("Вам сложно разглядеть какие либо детали..."))
 
 	var/t_He = ru_p_they(TRUE)
 	var/t_His = ru_p_them(TRUE)
 	var/t_his = ru_p_them()
 	var/t_him = ru_p_them()
-	// var/t_has = ru_p_have()
+	var/t_has = ru_p_have()
 	// var/t_is = ru_p_are()
 
 	. = list()
@@ -53,22 +53,40 @@
 	for(var/obj/item/bodypart/body_part as anything in bodyparts)
 		if(body_part.bodypart_disabled)
 			disabled += body_part
+
+		var/treatment_distance = isliving(user) && get_dist(src, user) <= CARBON_EXAMINE_EMBEDDING_MAX_DIST
 		for(var/obj/item/embedded as anything in body_part.embedded_objects)
 			if(embedded.get_embed().stealthy_embed)
 				continue
 			var/harmless = embedded.get_embed().is_harmless()
 			var/stuck_wordage = harmless ? "застревает" : "впивается"
-			var/embed_line = "[capitalize(embedded.declent_ru(ACCUSATIVE))]"
-			if (get_dist(src, user) <= CARBON_EXAMINE_EMBEDDING_MAX_DIST)
-				embed_line = "<a href='byond://?src=[REF(src)];embedded_object=[REF(embedded)];embedded_limb=[REF(body_part)]'>[embedded]</a>"
+			var/embed_line = "\a [embedded]"
+			if (treatment_distance)
+				embed_line = "<a href='byond://?src=[REF(src)];embedded_object=[REF(embedded)];embedded_limb=[REF(body_part)]'>\a [embedded]</a>"
 			var/embed_text = "[icon2html(embedded, user)] [embed_line] [stuck_wordage] в [t_his] [body_part.ru_plaintext_zone[ACCUSATIVE] || body_part.plaintext_zone]!"
 			if (harmless)
 				. += span_italics(span_notice(embed_text))
 			else
 				. += span_boldwarning(embed_text)
 
+		var/obj/item/tourniquet/current_tourniquet = LAZYACCESS(body_part.applied_items, LIMB_ITEM_TOURNIQUET)
+		if(current_tourniquet)
+			var/tourniquet_href = "\a [current_tourniquet]"
+			if(treatment_distance)
+				tourniquet_href = "<a href='byond://?src=[REF(src)];remove_tourniquet=[REF(body_part)]'>[tourniquet_href]</a>"
+			var/tourniquet_msg = "[t_He] [t_has] [icon2html(current_tourniquet, user)] [tourniquet_href] tightly secured around [t_his] [body_part.body_zone == BODY_ZONE_HEAD ? "neck" : body_part.plaintext_zone]."
+			if(body_part.body_zone == BODY_ZONE_HEAD)
+				. += span_boldwarning(tourniquet_msg)
+			else
+				. += span_notice(tourniquet_msg)
+
 		for(var/datum/wound/iter_wound as anything in body_part.wounds)
 			. += span_danger(iter_wound.get_examine_description(user))
+
+		var/surgery_examine = body_part.get_surgery_examine()
+		if(surgery_examine)
+			. += surgery_examine
+
 
 	for(var/obj/item/bodypart/body_part as anything in disabled)
 		var/damage_text
@@ -106,7 +124,7 @@
 		if(user == src && has_status_effect(/datum/status_effect/grouped/screwy_hud/fake_crit))//fake damage
 			temp = 50
 		else
-			temp = getBruteLoss()
+			temp = get_brute_loss()
 		var/list/damage_desc = get_majority_bodypart_damage_desc()
 		if(temp)
 			if(temp < 25)
@@ -116,7 +134,7 @@
 			else
 				. += span_bolddanger("У [ru_p_theirs()] тяжелые [damage_desc[BRUTE]]!")
 
-		temp = getFireLoss()
+		temp = get_fire_loss()
 		if(temp)
 			if(temp < 25)
 				. += span_danger("У [ru_p_theirs()] незначительные [damage_desc[BURN]].")
@@ -143,7 +161,7 @@
 		if(DISGUST_LEVEL_DISGUSTED to INFINITY)
 			. += "[t_He] выглядит крайне отвращенно."
 
-	var/apparent_blood_volume = blood_volume
+	var/apparent_blood_volume = CAN_HAVE_BLOOD(src) ? get_blood_volume(apply_modifiers = TRUE) : BLOOD_VOLUME_NORMAL
 	if(HAS_TRAIT(src, TRAIT_USES_SKINTONES) && ishuman(src))
 		var/mob/living/carbon/human/husrc = src // gross istypesrc but easier than refactoring even further for now
 		if(husrc.skin_tone == "albino")
@@ -180,7 +198,7 @@
 			if(appears_dead)
 				bleed_text += ", но кровь скопилась и не течет."
 			else
-				if(HAS_TRAIT(src, TRAIT_BLOODY_MESS))
+				if(HAS_TRAIT(src, TRAIT_BLOOD_FOUNTAIN))
 					bleed_text += " невероятно быстро"
 				bleed_text += "!"
 
@@ -198,39 +216,13 @@
 	if(reagents.has_reagent(/datum/reagent/teslium, needs_metabolizing = TRUE))
 		. += span_smallnoticeital("[t_He] излучает слабое голубое свечение!") // this should be signalized
 
+	var/mob/living/living_user = user
+	SEND_SIGNAL(living_user, COMSIG_CARBON_MID_EXAMINE, src, .) // Adds examine text after clothing and wounds but before death and scars
 	if(just_sleeping)
 		. += span_notice("[t_He] не реагирует на [t_him] окружение и, кажется, спит.")
-
 	else if(!appears_dead)
-		var/mob/living/living_user = user
 		if(src != user)
-			if(HAS_TRAIT(user, TRAIT_EMPATH))
-				if (combat_mode)
-					. += "[t_He] выглядит начеку."
-				if (getOxyLoss() >= 10)
-					. += "[t_He] выглядит измотанным."
-				if (getToxLoss() >= 10)
-					. += "[t_He] выглядит болезненно."
-				if(mob_mood.sanity <= SANITY_DISTURBED)
-					. += "[t_He] выглядит обеспокоенным."
-					living_user.add_mood_event("empath", /datum/mood_event/sad_empath, src)
-				if(is_blind())
-					. += "[t_He], кажется, смотрит в пустоту."
-				if (HAS_TRAIT(src, TRAIT_DEAF))
-					. += "[t_He], кажется, не реагирует на звуки."
-				if (bodytemperature > dna.species.bodytemp_heat_damage_limit)
-					. += "[t_He] краснеет и хрипло дышит."
-				if (bodytemperature < dna.species.bodytemp_cold_damage_limit)
-					. += "[t_He] дрожит."
-				if(HAS_TRAIT(src, TRAIT_EVIL))
-					. += "[t_His] глаза излучают полную безчувственность и холодную отстраненность. Нет ничего, кроме как тьмы, в [t_his] душе."
-					if(living_user.mind?.holy_role >= HOLY_ROLE_PRIEST)
-						. += span_warning("ИДЕАЛЬНЫЙ КАНДИДАТ ДЛЯ КАРЫ!!")
-					else
-						living_user.add_mood_event("encountered_evil", /datum/mood_event/encountered_evil)
-						living_user.set_jitter_if_lower(15 SECONDS)
-
-			if(HAS_TRAIT(user, TRAIT_SPIRITUAL) && mind?.holy_role)
+			if(HAS_TRAIT(user, TRAIT_SPIRITUAL) && mind?.holy_role && user != src)
 				. += "Вокруг [ru_p_theirs()] видно святую ауру."
 				living_user.add_mood_event("religious_comfort", /datum/mood_event/religiously_comforted)
 
@@ -587,7 +579,7 @@
 		if(undershirt.has_sensor == BROKEN_SENSORS)
 			. += list(span_notice("\The [undershirt]'s medical sensors are sparking."))
 
-	if(HAS_TRAIT(src, TRAIT_UNKNOWN) || HAS_TRAIT(src, TRAIT_INVISIBLE_MAN))
+	if((HAS_TRAIT(src, TRAIT_UNKNOWN_APPEARANCE) || HAS_TRAIT(src, TRAIT_INVISIBLE_MAN)) && !isobserver(user))
 		return
 
 	var/limbs_text = get_mismatched_limb_text()
